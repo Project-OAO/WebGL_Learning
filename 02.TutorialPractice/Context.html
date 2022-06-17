@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebGL Context</title>
+    <style>
+        #myCanvas{border:1px solid blue;}
+    </style>
+</head>
+<body>
+    <canvas id = "myCanvas" width = "300" height="300"></canvas>
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var gl = canvas.getContext("webgl");
+
+        //Defining the Required Geometry
+        var vertices = [
+            0.5,0.5, //Vertex 1
+            0.5,-0.5, //Vertex 2
+            -0.5,-0.5, //Vertex 3
+        ];
+
+        var indices = [0,1,2];
+
+
+        // vertex buffer
+        var vertex_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+        //Index buffer
+        var index_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+
+        //vertex buffer
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        //index buffer
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+
+    </script>
+</body>
+</html>
