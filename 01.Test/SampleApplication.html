@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<!-- <head>
     <meta charset="UTF-8">
     <title>Sample Application</title>
-</head>
+</head> -->
 <body>
     <canvas width = "300" height = "300" id = "my_Canvas"></canvas>
     
@@ -11,7 +11,7 @@
         var canvas = document.getElementById('my_Canvas');
         var gl = canvas.getContext("experimental-webgl");
 
-        var vertices = [-0.5, 0.5, -0.5, -0.5, 0.0, -0.5];
+        var vertices = [-0.5, 0.5, -0.5, -0.5, 0.0, -0.5,];
 
         var vertex_buffer = gl.createBuffer();
 
@@ -25,7 +25,7 @@
 
         var vertCode =
                 "attribute vec2 coordinates;" +
-                "void main(void) {" + " g1_position = vec4(coordinates,0.0, 1.0);" + "}";
+                "void main(void) {" + " gl_Position = vec4(coordinates,0.0, 1.0);" + "}";
 
         var vertShader = gl.createShader(gl.VERTEX_SHADER);
 
