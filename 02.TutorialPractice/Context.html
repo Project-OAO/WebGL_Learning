@@ -66,7 +66,6 @@
         gl.useProgram(shaderProgram);
 
         // Associating Attributes & Buffer Objects
-
         var coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates");
         gl.vertexAttribPointer(coordinatesVar, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(coordinatesVar);
