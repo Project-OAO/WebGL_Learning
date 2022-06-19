@@ -1,8 +1,8 @@
 # WebGL_Learning
 
 
-#### Target Date : 31JUL2022
-#### Purpose : Can handle the Web GL API
+#### - Target Date : 31JUL2022
+#### - Purpose : Can handle the Web GL API
 
 <hr>
 
