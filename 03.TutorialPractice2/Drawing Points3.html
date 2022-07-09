@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drawing Points3</title>
+</head>
+<body>
+    <canvas id="myCanvas" height=800 width=800></canvas>
+    <script>
+        // Step 1. Context
+        let canvas = document.getElementById("myCanvas");
+        let gl = canvas.getContext('webgl');
+
+        // Step 2. Buffer
+        let vertexTarget = [0.2,0.2,0.2,
+                            -0.1,-0.1,-0.1,
+                            0,0,0,];
+        let vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexTarget), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        // Step 3. Shader
+        let vertexCode =
+                'attribute vec3 coordinates;' +
+                'void main(void){' +
+                '   gl_Position = vec4(coordinates, 1.0);' +
+                '   gl_PointSize = 10.0;' +
+                '}';
+        let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertexCode);
+        gl.compileShader(vertexShader);
+
+        let fragmentCode =
+                'void main(void){' +
+                '   gl_FragColor = vec4(0.7, 0.0, 0.0, 1);' +
+                '}';
+        let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragmentCode);
+        gl.compileShader(fragmentShader);
+
+        let shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+        gl.useProgram(shaderProgram);
+
+        // Step 4. Associate Buffer and Shader attribute
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        let vertexAttribute = gl.getAttribLocation(shaderProgram, "coordinates");
+        gl.vertexAttribPointer(vertexAttribute, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vertexAttribute);
+
+        // Step 5. Drawing the Required Object
+        gl.clearColor(0.5,0.5,0.5,0.9);
+        gl.enable(gl.DEPTH_TEST);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.viewport(0,0,canvas.width,canvas.height);
+        gl.drawArrays(gl.POINTS, 0, 3);
+    </script>
+</body>
+</html>

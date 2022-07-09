@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drawing Points2</title>
+</head>
+<body>
+    <canvas id = 'myCanvas' width = 500 height=500></canvas>
+    <script>
+        // Practice on my own
+
+        // Step 1. Set up the canvas
+        let canvas = document.getElementById('myCanvas');
+        let gl = canvas.getContext('webgl');
+
+        // Step 2. Set up the buffer
+        let vertexTarget = [0.5, 0.2, 0.3,
+                            1.0, -0.5, -0.2,
+                            -1.0, 0.2, 0.3,];
+        let vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexTarget), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        // Step 3. Crate Shader and set up in it.
+        let vertexCode =
+                'attribute vec3 coordinates;' +
+                'void main(void){' +
+                '   gl_Position = vec4(coordinates, 1.0);' +
+                '   gl_PointSize = 10.0;' +
+                '}';
+        let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertexCode);
+        gl.compileShader(vertexShader);
+
+        let fragmentcode =
+                'void main(void){' +
+                '   gl_FragColor = vec4(1,0,0,0.1);' +
+                '}';
+        let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragmentcode);
+        gl.compileShader(fragmentShader);
+
+        let shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+        gl.useProgram(shaderProgram);
+
+        // Step 4. Associate the Shader program to buffer Objects.
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        let vertexVar = gl.getAttribLocation(shaderProgram, "coordinates");
+        gl.vertexAttribPointer(vertexVar, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vertexVar);
+
+        // Step 5. Drawing the Required Object
+        gl.clearColor(0.5,0.5,0.5,1);
+        gl.enable(gl.DEPTH_TEST);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.viewport(0,0,canvas.width,canvas.height);
+        gl.drawArrays(gl.POINTS,0,3);
+
+    </script>
+
+</body>
+</html>
