@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colors3</title>
+</head>
+<body>
+    <canvas id="myCanvas" width=500 height=500></canvas>
+    <script>
+        // Step 1. Prepare the Canvas and Get the WebGL Context
+        let canvas = document.getElementById("myCanvas");
+        let gl = canvas.getContext("webgl");
+
+        // Step 2. Define the Geometry and Store it in the Buffer Object
+        let vertices = [
+                0.5, 0.5, 0.0,
+                -0.5, 0.5, 0.0,
+                -0.5, -0.5, 0.0,
+                0.5, -0.5, 0.0,
+        ];
+        let vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        let indices = [0,1,3,1,2,3];
+        let indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+        let colors = [1,0,0, 0,1,0, 0,0,1, 1,0,1];
+        let colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        // Step 3. Create and Compile the Shader Program.
+        let vertCode = '' +
+                'attribute vec3 coordinates;' +
+                'attribute vec3 color;' +
+                'varying vec3 vColor;' +
+                'void main(void){' +
+                '   gl_Position = vec4(coordinates, 1.0);' +
+                '   vColor = color;' +
+                '}';
+        let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertCode);
+        gl.compileShader(vertexShader);
+
+        let fragCode = '' +
+                'precision mediump float;' +
+                'varying vec3 vColor;' +
+                'void main(void){' +
+                '   gl_FragColor = vec4(vColor,1.0);' +
+                '}';
+        let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragShader, fragCode);
+        gl.compileShader(fragShader);
+
+        let shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragShader);
+        gl.linkProgram(shaderProgram);
+        gl.useProgram(shaderProgram);
+
+        // Step 4. Associate the Shader Program to the Buffer Object.
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        let coord = gl.getAttribLocation(shaderProgram, "coordinates");
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(coord);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        let color = gl.getAttribLocation(shaderProgram, "color");
+        gl.vertexAttribPointer(color, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(color);
+
+        // Step 5. Drawing the Required Object
+        gl.clearColor(0.5, 0.5, 0.5, 0.9);
+        gl.enable(gl.DEPTH_TEST);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.viewport(0,0, canvas.width, canvas.height);
+        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+
+    </script>
+</body>
+</html>

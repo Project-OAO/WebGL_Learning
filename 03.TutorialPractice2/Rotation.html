@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rotation</title>
+</head>
+<body>
+    <canvas id="myCanvas" width=500 height=500></canvas>
+    <script>
+        let canvas = document.getElementById("myCanvas");
+        let gl = canvas.getContext('webgl');
+
+        // Step 2. Defining and storing the geometry
+        let vertices = [
+                -1,-1,-1,
+                1,-1,-1,
+                1,1,-1,
+        ];
+        let colors = [
+                1,1,1,
+                1,1,1,
+                1,1,1,
+        ];
+        let indices = [0,1,2];
+
+        // Create and store data into vertex buffer
+        let vertex_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        // Create and store data into color buffer
+        let color_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+        //Create and store data into index buffer
+        let index_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+        // Step 3. Create and Compile the Shader Program
+        let vertCode = '' +
+                'attribute vec3 position;' +
+                'uniform mat4 Pmatrix;' +
+                'uniform mat4 Vmatrix;' +
+                'uniform mat4 Mmatrix;' +
+                'attribute vec3 color;' +
+                'varying vec3 vColor;' +
+                '' +
+                'void main(void){' +
+                '   gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);' +
+                // Normally gl_Position decided the location of the object.
+                '   vColor = color;' +
+                '}';
+        let fragCode = '' +
+                'precision mediump float;' +
+                'varying vec3 vColor;' +
+                'void main(void){' +
+                '   gl_FragColor = vec4(vColor,1.0);' +
+                '}';
+
+        let vertShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertShader,vertCode);
+        gl.compileShader(vertShader);
+
+        let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragShader, fragCode);
+        gl.compileShader(fragShader);
+
+        let shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertShader);
+        gl.attachShader(shaderProgram, fragShader);
+        gl.linkProgram(shaderProgram);
+
+        // Step 4. Associating the Shader Program to the Buffer Object
+        // Associating attributes to vertex shader
+        let Pmatrix = gl.getUniformLocation(shaderProgram, "Pmatrix");
+        let Vmatrix = gl.getUniformLocation(shaderProgram, "Vmatrix");
+        let Mmatrix = gl.getUniformLocation(shaderProgram, "Mmatrix");
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+        let position = gl.getAttribLocation(shaderProgram,"position");
+        gl.vertexAttribPointer(position, 3, gl.FLOAT, false,0,0);
+        gl.enableVertexAttribArray(position);
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+
+        let color=gl.getAttribLocation(shaderProgram, "color");
+        gl.vertexAttribPointer(color, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(color);
+        gl.useProgram(shaderProgram);
+
+        // MATRIX
+        function get_projection(angle, a, zMin, zMax){
+            var ang = Math.tan((angle*.5)*Math.PI/180);
+            return [
+                    0.5/ang, 0, 0, 0,
+                    0, 0.5*a/ang, 0, 0,
+                    0, 0, -(zMax+zMin)/(zMax-zMin), -1,
+                    0, 0, (-2*zMax*zMin)/(zMax-zMin), 0,
+            ];
+        }
+
+        let proj_matrix = get_projection(40, canvas.width/canvas.height, 1, 100);
+        let move_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+        let view_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+
+        //translating z
+        view_matrix[14] = view_matrix[14]-6;
+
+        // rotation
+        function rotateZ(m, angle){
+            let c = Math.cos(angle);
+            let s = Math.sin(angle);
+            let mv0 = m[0], mv4 = m[4], mv8=m[8];
+
+            m[0] = c*m[0]-s*m[1];
+            m[4]
+        }
+    </script>
+</body>
+</html>
